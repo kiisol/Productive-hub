@@ -6,8 +6,8 @@ export default function Layout() {
 
     return (
         <div style={{ display: 'grid', gridTemplateColumns: '200px 1fr', minHeight: '100vh' }}>
-            <aside style={{ padding: 16, borderRight: '1px solid #eee' }}>
-                <nav style={{ display: 'grid', gap: 8 }}>
+            <aside style={{ padding: 18, borderRight: '1px dashed #193874' }}>
+                <nav style={{ display: 'grid', gap: 12 }}>
                     <Link to="/dashboard">Dashboard</Link>
                     <Link to="/tasks">Tasks</Link>
                 </nav>
