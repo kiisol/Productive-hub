@@ -1,16 +1,7 @@
-import { createContext, useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { AuthState, LoginInput, User } from './model';
 import * as api from './service';
-
-type AuthContextType = {
-    user: User | null;
-    token: string | null;
-    login: (input: LoginInput) => Promise<void>;
-    logout: () => Promise<void>;
-    isLoading: boolean;
-};
-
-export const AuthContext = createContext<AuthContextType | null>(null);
+import { AuthContext, type AuthContextType } from './AuthContext';
 
 const STORAGE_KEY = 'auth_token';
 const STORAGE_USER = 'auth_user';
@@ -25,7 +16,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             const userStr = localStorage.getItem(STORAGE_USER);
             const user = userStr ? (JSON.parse(userStr) as User) : null;
             if (token) setState({ token, user });
-        } catch {}
+        } catch {
+            /* ignore storage errors */
+        }
     }, []);
 
     const doLogin = useCallback(async (input: LoginInput) => {
@@ -58,5 +51,4 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     );
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-
 }

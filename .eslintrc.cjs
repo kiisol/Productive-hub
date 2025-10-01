@@ -24,6 +24,7 @@ module.exports = {
                 ],
                 pathGroupsExcludedImportTypes: ['builtin'],
             }],
+        'no-empty': ['warn', { allowEmptyCatch: true }],
         "@typescript-eslint/consistent-type-imports": "warn"
     }
 };
