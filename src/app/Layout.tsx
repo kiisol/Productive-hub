@@ -15,6 +15,8 @@ function ThemeSwitch() {
 export default function Layout() {
   const { user, logout, isLoading } = useAuth();
 
+
+ 
   return (
     <div className="min-h-dvh grid grid-cols-[200px_1fr] bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100">
       <aside className="p-4 border-r border-gray-200 dark:border-gray-800 space-y-3">
