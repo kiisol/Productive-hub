@@ -1,5 +1,3 @@
-// src/shared/api/http.ts
-
 
 export type HttpError = {
     code: number | 'NETWORK_ERROR' | 'TIMEOUT';
