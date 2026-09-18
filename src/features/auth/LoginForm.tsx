@@ -5,6 +5,8 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import type {LoginInput} from './model';
 import {useAuth} from './useAuth';
 import {useNavigate} from 'react-router-dom';
+import {FormField} from "@shared/ui/FormField";
+import {Button} from "@shared/ui/Button";
 
 const schema = z.object({
     email: z.string().email('Введите корректный e-mail'),
@@ -30,26 +32,17 @@ export default function LoginForm() {
     });
 
     return (
-        <form onSubmit={onSubmit} style={{display: 'grid', gap: 12, maxWidth: 320}}>
-            <label>
-                Email
-                <input type="email" {...register('email')} />
-            </label>
+        <form onSubmit={onSubmit} className={'grid gap-4'}>
+            <FormField label="Email" type="email" {...register('email')} errorObj={errors.email} />
             {errors.email && <small style={{color: 'crimson'}}>{errors.email.message}</small>}
-
-            <label>
-                Password
-                <input type="password" {...register('password')} />
-            </label>
+            <FormField label="Password" type="password" {...register('password')} errorObj={errors.password} />
             {errors.password && <small style={{color: 'crimson'}}>{errors.password.message}</small>}
-
             {serverError && <div style={{color: 'crimson'}}>{serverError}</div>}
-
-            <button type="submit" disabled={isSubmitting || isLoading}>
+            <Button type="submit" disabled={isSubmitting || isLoading} full>
                 {isSubmitting || isLoading ? 'Signing in…' : 'Sign in'}
-            </button>
+            </Button>
 
-            <small>Для входа используй пароль: <code>password123</code></small>
+            <p className="text-xs text-gray-500">Демо пароль: <code>password123</code></p>
         </form>
     );
 }
