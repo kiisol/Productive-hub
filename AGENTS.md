@@ -54,6 +54,7 @@
 - `src/features/auth`: demo service, session context/provider, useAuth, and validated login form.
 - `src/features/tasks`: task model and seed examples, useTasks storage hook, TaskWorkspace, and NewTaskDialog.
 - `src/shared/ui`: reusable UI primitives; `src/shared/api/http.ts`: fetch wrapper with token, retries, and timeout.
+- Reusable screen composition lives in `src/shared/ui/ScreenLayout.tsx`, `ScreenHeader`, `StatCard`, and `PanelHeader`. New screens should compose these primitives and pass content through props rather than duplicating layout markup.
 - `src/shared/i18n`: translation keys and the `t`/`useTranslation` helpers. Add user-facing copy there instead of embedding strings in components.
 - `src/shared/lib`: number, object, and string helpers with existing Vitest tests.
 - `src/index.css`: global styles and current shared tokens. Path aliases are configured in Vite and TypeScript.
@@ -77,7 +78,7 @@
 - English is the current product language. Additional languages should be added as translation dictionaries without moving copy back into components.
 - Last checks in this session: frontend TypeScript check and Vite production build passed; 7 existing helper tests passed. Browser checks covered demo login, completion filter, and opening/cancelling the creation dialog.
 - Narrow-screen layout and task creation/deletion persistence were not verified end to end in the browser; do not infer coverage from the existing helper tests.
-- Next agreed styling work: finish migrating global and shared component styles to tokens while preserving the approved visual direction. Additional product features require task context, not assumptions from this list.
+- Next styling work: finish migrating global and shared component styles to tokens while preserving the approved visual direction. New screens should start from the reusable screen primitives before adding page-specific sections.
 
 ## Keep this context current
 

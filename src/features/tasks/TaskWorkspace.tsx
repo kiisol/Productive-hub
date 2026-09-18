@@ -40,9 +40,27 @@ export default function TaskWorkspace({ today = false }: { today?: boolean }) {
                 }
             />
             <section className="overview" aria-label={t('tasks.overview')}>
-                <StatCard icon="▤" iconTone="purple" label={t('tasks.total')} value={tasks.length} hint={t('tasks.inYourSpace')} />
-                <StatCard icon="◷" iconTone="amber" label={t('tasks.inProgress')} value={tasks.length - done} hint={t('tasks.stepByStep')} />
-                <StatCard icon="✓" iconTone="green" label={t('tasks.completed')} value={done} hint={t('tasks.beProud')} />
+                <StatCard
+                    icon="▤"
+                    iconTone="purple"
+                    label={t('tasks.total')}
+                    value={tasks.length}
+                    hint={t('tasks.inYourSpace')}
+                />
+                <StatCard
+                    icon="◷"
+                    iconTone="amber"
+                    label={t('tasks.inProgress')}
+                    value={tasks.length - done}
+                    hint={t('tasks.stepByStep')}
+                />
+                <StatCard
+                    icon="✓"
+                    iconTone="green"
+                    label={t('tasks.completed')}
+                    value={done}
+                    hint={t('tasks.beProud')}
+                />
             </section>
             <div className="workspace-grid">
                 <section className="task-panel">
