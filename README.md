@@ -26,7 +26,7 @@ The API runs on `http://127.0.0.1:3000` and the Vite frontend uses `VITE_API_URL
 
 SQLite creates `../backend/data/productive-hub.sqlite` on first API start. The database starts empty: users and tasks appear only after someone signs in and adds them.
 
-The demo password is `password123`. Authentication is intentionally development-only until a real identity provider is added.
+Create an account from the login screen or sign in with an existing account. Authentication is intentionally development-only until a real identity provider is added.
 
 ## Checks
 

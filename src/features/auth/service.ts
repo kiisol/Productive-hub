@@ -1,8 +1,12 @@
-import type { LoginInput, LoginResult } from './model';
+import type { LoginInput, LoginResult, RegisterInput } from './model';
 import { http } from '@shared/api/http';
 
 export async function login(input: LoginInput): Promise<LoginResult> {
     return http.post<LoginResult>('/auth/login', input, { withAuth: false });
+}
+
+export async function register(input: RegisterInput): Promise<LoginResult> {
+    return http.post<LoginResult>('/auth/register', input, { withAuth: false });
 }
 
 export async function logout(): Promise<void> {

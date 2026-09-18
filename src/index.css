@@ -820,6 +820,18 @@ progress::-moz-progress-bar {
 .demo-note code {
     color: var(--accent);
 }
+.auth-switch {
+    color: var(--muted);
+    font-size: 12px;
+    text-align: center;
+}
+.auth-switch button {
+    background: none;
+    color: var(--accent);
+    font-size: inherit;
+    font-weight: 650;
+    padding: 0;
+}
 @media (min-width: 1450px) {
     .main-content {
         padding: 42px 64px;

@@ -56,7 +56,8 @@
 - `src/shared/ui`: reusable UI primitives; `src/shared/api/http.ts`: fetch wrapper with token, retries, and timeout.
 - Reusable screen composition lives in `src/shared/ui/ScreenLayout.tsx`, `ScreenHeader`, `StatCard`, and `PanelHeader`. New screens should compose these primitives and pass content through props rather than duplicating layout markup.
 - `src/shared/i18n`: translation keys and the `t`/`useTranslation` helpers. Add user-facing copy there instead of embedding strings in components.
-- `../backend/src/server.js`: local Node API for auth and task CRUD. The backend is a sibling project at `/Volumes/T7/WorkProjects/ProductiveHub/backend` and stores SQLite data in its own `data` directory.
+- `../backend/src/server.js`: HTTP server and route composition for the local Node API. The backend is a sibling project at `/Volumes/T7/WorkProjects/ProductiveHub/backend` and stores SQLite data in its own `data` directory.
+- `../backend/src/services`: authentication and task business services used by the server.
 - `../backend/src/db.js`: SQLite WASM initialization and persistence for users and tasks. The frontend and backend are separate pnpm projects with their own dependency manifests.
 - `src/shared/lib`: number, object, and string helpers with existing Vitest tests.
 - `src/index.css`: global styles and current shared tokens. Path aliases are configured in Vite and TypeScript.
@@ -77,7 +78,8 @@
 - SQLite data is persisted at `/Volumes/T7/WorkProjects/ProductiveHub/backend/data/productive-hub.sqlite`; the database is created empty and grows through sign-in and task actions.
 - Tasks are currently browser-wide, not isolated by signed-in user; changing a demo account does not create a separate task workspace.
 - My Day reuses TaskWorkspace and shows incomplete tasks; there are no due dates or actual date-based selection yet.
-- Demo login accepts a valid email and `password123`; session keys are `auth_token` and `auth_user`.
+- Users can register with a name, email, and password; login validates the stored password hash. Existing legacy demo users can still use `password123` once and are upgraded to a hash.
+- Session keys are `auth_token` and `auth_user`.
 - HTTP configuration uses `VITE_API_URL`; login and task operations call the local Node API.
 - Editing tasks, project management, backend sync, real authentication, and full token migration are not implemented.
 - English is the current product language. Additional languages should be added as translation dictionaries without moving copy back into components.
