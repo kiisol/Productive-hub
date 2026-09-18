@@ -1,4 +1,3 @@
-
 export function safeGet<T = unknown>(obj: unknown, path: string): T | undefined;
 export function safeGet<T = unknown, F = unknown>(obj: unknown, path: string, fallback: F): T | F;
 export function safeGet<T, F>(obj: unknown, path: string, fallback?: F) {
@@ -20,7 +19,6 @@ export function deepMerge<A extends Plain, B extends Plain>(a: A, b: B): A & B {
         if (isPlainObject(v) && isPlainObject(out[k])) {
             out[k] = deepMerge(out[k] as Plain, v as Plain);
         } else {
-
             out[k] = v;
         }
     }

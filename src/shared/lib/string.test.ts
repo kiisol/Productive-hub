@@ -10,7 +10,7 @@ describe('string utils', () => {
     });
 
     it('normalizeNumber', () => {
-        expect(normalizeNumber(' 1 299,90 ')).toBe(1299.90);
+        expect(normalizeNumber(' 1 299,90 ')).toBe(1299.9);
         expect(normalizeNumber('42')).toBe(42);
         expect(normalizeNumber('')).toBeNull();
         expect(normalizeNumber('abc')).toBeNull();

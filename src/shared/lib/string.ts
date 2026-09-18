@@ -3,10 +3,7 @@ export function isEmpty(s: string | null | undefined): boolean {
 }
 
 export function normalizeNumber(str: string): number | null {
-    const cleaned = str
-        .trim()
-        .replace(/\s+/g, '')
-        .replace(',', '.');
+    const cleaned = str.trim().replace(/\s+/g, '').replace(',', '.');
 
     if (cleaned === '' || cleaned === '.' || cleaned === '-' || Number.isNaN(Number(cleaned))) {
         return null;

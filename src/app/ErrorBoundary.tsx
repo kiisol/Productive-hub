@@ -8,7 +8,9 @@ type State = { error?: Error };
 
 export class ErrorBoundary extends Component<Props, State> {
     state: State = { error: undefined };
-    static getDerivedStateFromError(error: Error) { return { error }; }
+    static getDerivedStateFromError(error: Error) {
+        return { error };
+    }
     render() {
         if (this.state.error) {
             return this.props.fallback ?? <div>Something went wrong</div>;

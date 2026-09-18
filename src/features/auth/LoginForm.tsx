@@ -1,48 +1,84 @@
-import {useState} from 'react';
-import {useForm} from 'react-hook-form';
-import {z} from 'zod';
-import {zodResolver} from '@hookform/resolvers/zod';
-import type {LoginInput} from './model';
-import {useAuth} from './useAuth';
-import {useNavigate} from 'react-router-dom';
-import {FormField} from "@shared/ui/FormField";
-import {Button} from "@shared/ui/Button";
-
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useNavigate } from 'react-router-dom';
+import type { LoginInput } from './model';
+import { useAuth } from './useAuth';
+import { t } from '@shared/i18n';
 const schema = z.object({
-    email: z.string().email('Введите корректный e-mail'),
-    password: z.string().min(6, 'Минимум 6 символов'),
+    email: z.string().email(t('auth.invalidEmail')),
+    password: z.string().min(6, t('auth.shortPassword')),
 });
-
 export default function LoginForm() {
-    const {login, isLoading} = useAuth();
+    const { login, isLoading } = useAuth();
     const navigate = useNavigate();
-    const [serverError, setServerError] = useState<string | null>(null);
-
-    const {register, handleSubmit, formState: {errors, isSubmitting}} =
-        useForm<LoginInput>({resolver: zodResolver(schema)});
-
-    const onSubmit = handleSubmit(async (data) => {
-        setServerError(null);
-        try {
-            await login(data);        // пароль для демо: "password123"
-            navigate('/dashboard', {replace: true});
-        } catch (e: any) {
-            setServerError(e?.message || 'Login failed');
-        }
-    });
-
+    const [error, setError] = useState('');
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isSubmitting },
+    } = useForm<LoginInput>({ resolver: zodResolver(schema) });
     return (
-        <form onSubmit={onSubmit} className={'grid gap-4'}>
-            <FormField label="Email" type="email" {...register('email')} errorObj={errors.email} />
-            {errors.email && <small style={{color: 'crimson'}}>{errors.email.message}</small>}
-            <FormField label="Password" type="password" {...register('password')} errorObj={errors.password} />
-            {errors.password && <small style={{color: 'crimson'}}>{errors.password.message}</small>}
-            {serverError && <div style={{color: 'crimson'}}>{serverError}</div>}
-            <Button type="submit" disabled={isSubmitting || isLoading} full>
-                {isSubmitting || isLoading ? 'Signing in…' : 'Sign in'}
-            </Button>
-
-            <p className="text-xs text-gray-500">Демо пароль: <code>password123</code></p>
+        <form
+            className="login-form"
+            onSubmit={handleSubmit(async (data) => {
+                setError('');
+                try {
+                    await login(data);
+                    navigate('/tasks', { replace: true });
+                } catch {
+                    setError(t('auth.signInError'));
+                }
+            })}
+        >
+            <label>
+                Email
+                <input
+                    type="email"
+                    autoComplete="email"
+                    placeholder="you@example.com"
+                    {...register('email')}
+                    aria-invalid={!!errors.email}
+                    aria-describedby={errors.email ? 'email-error' : undefined}
+                />
+            </label>
+            {errors.email && (
+                <small className="error" id="email-error">
+                    {errors.email.message}
+                </small>
+            )}
+            <label>
+                {t('auth.password')}
+                <input
+                    type="password"
+                    autoComplete="current-password"
+                    placeholder={t('auth.passwordPlaceholder')}
+                    {...register('password')}
+                    aria-invalid={!!errors.password}
+                    aria-describedby={errors.password ? 'password-error' : undefined}
+                />
+            </label>
+            {errors.password && (
+                <small className="error" id="password-error">
+                    {errors.password.message}
+                </small>
+            )}
+            {error && (
+                <p role="alert" className="error">
+                    {error}
+                </p>
+            )}
+            <button className="primary" disabled={isLoading || isSubmitting}>
+                {isLoading ? t('auth.signingIn') : t('auth.signIn')}
+            </button>
+            <div className="demo-note">
+                {t('auth.demoSpace')}
+                <br />
+                <span>
+                    {t('auth.demoHint')} <code>password123</code>
+                </span>
+            </div>
         </form>
     );
 }

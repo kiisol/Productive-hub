@@ -1,3 +1,4 @@
+import TaskWorkspace from '@features/tasks/TaskWorkspace';
 export default function DashboardPage() {
-    return <div>Dashboard</div>;
+    return <TaskWorkspace today />;
 }

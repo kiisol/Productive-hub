@@ -1,15 +1,41 @@
 import LoginForm from '@features/auth/LoginForm';
-import {Card} from '@shared/ui/Card';
-
-
+import { t } from '@shared/i18n';
 export default function LoginPage() {
     return (
-        <div
-            className="min-h-dvh grid place-items-center p-4 bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100">
-            <Card className="w-full max-w-sm">
-                <h2 className="text-xl font-semibold mb-4">Welcome back</h2>
-                <LoginForm/>
-            </Card>
-        </div>
-    )
+        <main className="login-page">
+            <section className="login-story">
+                <div className="brand">
+                    <span className="brand-mark">
+                        p<span>•</span>
+                    </span>
+                    productive.
+                </div>
+                <div>
+                    <div className="eyebrow">{t('login.eyebrow')}</div>
+                    <h1>
+                        {t('login.titleFirst')}
+                        <br />
+                        {t('login.titleSecond')}
+                    </h1>
+                    <p>
+                        {t('login.descriptionFirst')}
+                        <br />
+                        {t('login.descriptionSecond')}
+                    </p>
+                    <div className="login-art" aria-hidden="true">
+                        ✳
+                    </div>
+                </div>
+                <small>{t('login.footer')}</small>
+            </section>
+            <section className="login-form-panel">
+                <div>
+                    <span className="eyebrow">{t('login.formEyebrow')}</span>
+                    <h2>{t('login.heading')}</h2>
+                    <p>{t('login.subtitle')}</p>
+                    <LoginForm />
+                </div>
+            </section>
+        </main>
+    );
 }

@@ -1,6 +1,5 @@
 // src/shared/api/http.ts
 
-
 export type HttpError = {
     code: number | 'NETWORK_ERROR' | 'TIMEOUT';
     message: string;
@@ -15,11 +14,11 @@ export type RetryOptions = {
 export type HttpOptions = {
     method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
     headers?: Record<string, string>;
-    body?: unknown;           // объект для JSON
-    timeout?: number;         // мс, по умолчанию 10000
-    signal?: AbortSignal;     // внешняя отмена (например, из React)
-    withAuth?: boolean;       // по умолчанию true
-    retry?: RetryOptions;     // настройки ретраев
+    body?: unknown; // JSON body
+    timeout?: number; // milliseconds, 10000 by default
+    signal?: AbortSignal; // external cancellation, for example from React
+    withAuth?: boolean; // true by default
+    retry?: RetryOptions; // retry settings
 };
 
 const DEFAULT_RETRY: Required<RetryOptions> = {
@@ -42,16 +41,15 @@ function shouldRetry(err: HttpError | { code?: number | string }, status?: numbe
         if (status >= 502 && status <= 504) return true; // bad gateway / gateway timeout / service unavailable
         return false;
     }
-    // по коду ошибки
+    // by error code
     return err.code === 'NETWORK_ERROR' || err.code === 'TIMEOUT';
 }
 
 const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-
 const BASE_URL = import.meta.env.VITE_API_URL;
 
-/** Нормализуем любую ошибку к единому виду */
+/** Normalize any error into a single shape. */
 function toHttpError(e: unknown): HttpError {
     if (typeof e === 'object' && e !== null && 'code' in (e as any) && 'message' in (e as any)) {
         return e as HttpError;
@@ -59,7 +57,7 @@ function toHttpError(e: unknown): HttpError {
     return { code: 'NETWORK_ERROR', message: (e as Error)?.message || 'Network error' };
 }
 
-/** Обёртка над fetch с baseURL, JSON, отменой и таймаутом */
+/** Fetch wrapper with base URL, JSON, cancellation, and timeout support. */
 export async function http<T>(url: string, options: HttpOptions = {}): Promise<T> {
     const {
         method = 'GET',
@@ -73,11 +71,11 @@ export async function http<T>(url: string, options: HttpOptions = {}): Promise<T
 
     const fullUrl = url.startsWith('http') ? url : `${BASE_URL}${url}`;
 
-    // финальные настройки ретраев
+    // final retry settings
     const r = { ...DEFAULT_RETRY, ...retry };
     const isRetryAllowedForMethod = r.retryOnMethods.includes(method);
 
-    // соберём хедеры (с учётом withAuth)
+    // build headers, including auth when enabled
     const baseHeaders: Record<string, string> = { ...headers };
     if (withAuth) {
         const token = getAuthToken();
@@ -86,17 +84,20 @@ export async function http<T>(url: string, options: HttpOptions = {}): Promise<T
         }
     }
 
-    // подготовим тело
+    // prepare the request body
     let fetchBody: BodyInit | undefined;
     if (body !== undefined && body !== null) {
         if (!baseHeaders['Content-Type']) baseHeaders['Content-Type'] = 'application/json';
         fetchBody = typeof body === 'string' ? body : JSON.stringify(body);
     }
 
-    // Функция одной попытки (без ретраев)
+    // One request attempt without retries.
     const attemptOnce = async (): Promise<T> => {
         const ctrl = new AbortController();
-        const timer = setTimeout(() => ctrl.abort(new DOMException('Timeout', 'AbortError')), timeout);
+        const timer = setTimeout(
+            () => ctrl.abort(new DOMException('Timeout', 'AbortError')),
+            timeout,
+        );
 
         if (signal) {
             const onAbort = () => ctrl.abort(signal.reason as any);
@@ -116,8 +117,11 @@ export async function http<T>(url: string, options: HttpOptions = {}): Promise<T
 
             if (!res.ok) {
                 const text = await safeReadText(res);
-                const err: HttpError = { code: res.status, message: text || res.statusText || 'HTTP error' };
-                // бросаем — выше решим, ретраить или нет
+                const err: HttpError = {
+                    code: res.status,
+                    message: text || res.statusText || 'HTTP error',
+                };
+                // Throw and let the retry loop decide what to do.
                 throw err;
             }
 
@@ -135,7 +139,7 @@ export async function http<T>(url: string, options: HttpOptions = {}): Promise<T
         }
     };
 
-    // Цикл с ретраями
+    // Retry loop
     let attempt = 0;
     let lastError: HttpError | null = null;
 
@@ -145,27 +149,29 @@ export async function http<T>(url: string, options: HttpOptions = {}): Promise<T
         } catch (err: any) {
             lastError = toHttpError(err);
 
-            // можно ли ретраить?
+            // determine whether another attempt is allowed
             const status = typeof err?.code === 'number' ? (err.code as number) : undefined;
             const canRetry =
                 isRetryAllowedForMethod && attempt < r.retries && shouldRetry(lastError, status);
 
             if (!canRetry) throw lastError;
 
-            // экспоненциальная задержка с «джиттером»
-            const backoff = Math.floor(r.retryDelay * Math.pow(2, attempt) * (0.8 + Math.random() * 0.4));
+            // exponential backoff with jitter
+            const backoff = Math.floor(
+                r.retryDelay * Math.pow(2, attempt) * (0.8 + Math.random() * 0.4),
+            );
             attempt += 1;
             await delay(backoff);
-            // следующая попытка
+            // next attempt
         }
     }
 }
 
-/** Утилиты чтения тела ответа */
+/** Response body readers. */
 async function safeReadJson<T>(res: Response): Promise<T | undefined> {
     const contentType = res.headers.get('content-type') || '';
     if (!contentType.includes('application/json')) {
-        // может быть пустое тело (204/205) — вернём undefined
+        // 204/205 may have an empty body, so return undefined.
         const text = await safeReadText(res);
         return (text ? (JSON.parse(text) as T) : undefined) as T | undefined;
     }
@@ -184,7 +190,11 @@ http.get = async function <T>(url: string, opts: Omit<HttpOptions, 'method' | 'b
     return http<T>(url, { ...opts, method: 'GET' });
 };
 
-http.post = async function <T>(url: string, body?: unknown, opts: Omit<HttpOptions, 'method'> = {}) {
+http.post = async function <T>(
+    url: string,
+    body?: unknown,
+    opts: Omit<HttpOptions, 'method'> = {},
+) {
     return http<T>(url, { ...opts, method: 'POST', body });
 };
 
@@ -192,7 +202,11 @@ http.put = async function <T>(url: string, body?: unknown, opts: Omit<HttpOption
     return http<T>(url, { ...opts, method: 'PUT', body });
 };
 
-http.patch = async function <T>(url: string, body?: unknown, opts: Omit<HttpOptions, 'method'> = {}) {
+http.patch = async function <T>(
+    url: string,
+    body?: unknown,
+    opts: Omit<HttpOptions, 'method'> = {},
+) {
     return http<T>(url, { ...opts, method: 'PATCH', body });
 };
 

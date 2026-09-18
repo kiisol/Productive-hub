@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { sum, avg, clamp } from './number';
 
-
 describe('number util', () => {
     it('sum', () => {
         expect(sum([1, 2, 3])).toBe(6);
@@ -9,8 +8,8 @@ describe('number util', () => {
     });
 
     it('avg ', () => {
-        expect(avg([2, 4])).toBe(3)
-        expect(avg([])).toBe(0)
+        expect(avg([2, 4])).toBe(3);
+        expect(avg([])).toBe(0);
         expect(avg([1, 2, 3])).toBe(2);
         expect(avg([0.1, 0.2])).toBeCloseTo(0.15, 10);
         expect(avg([])).toBe(0);

@@ -4,15 +4,17 @@ import clsx from 'clsx';
 type Props = React.InputHTMLAttributes<HTMLInputElement> & {
     label?: string;
     error?: string | null;
-    hint?: string
-}
+    hint?: string;
+};
 
 export const TextInput = React.forwardRef<HTMLInputElement, Props>(
     ({ label, error, hint, id, className, ...props }, ref) => {
-        const inputId = id || React.useId();
+        const generatedId = React.useId();
+        const inputId = id || generatedId;
         const errId = `${inputId}-err`;
         const hintId = `${inputId}-hint`;
-        const describedBy = [error ? errId : null, hint ? hintId : null].filter(Boolean).join(' ') || undefined;
+        const describedBy =
+            [error ? errId : null, hint ? hintId : null].filter(Boolean).join(' ') || undefined;
 
         return (
             <div className="grid gap-1.5">

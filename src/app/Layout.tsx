@@ -1,38 +1,57 @@
-import { Link, Outlet } from 'react-router-dom';
+import { NavLink, Outlet } from 'react-router-dom';
 import { useAuth } from '@features/auth/useAuth';
-
-function ThemeSwitch() {
-    return (
-        <button
-            onClick={() => document.documentElement.classList.toggle('dark')}
-            className="text-sm px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700"
-        >
-            🌓 Theme
-        </button>
-    );
-}
-
+import { t } from '@shared/i18n';
 export default function Layout() {
     const { user, logout, isLoading } = useAuth();
-
     return (
-        <div className="min-h-dvh grid grid-cols-[200px_1fr] bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100">
-            <aside className="p-4 border-r border-gray-200 dark:border-gray-800 space-y-3">
-                <nav className="grid gap-2">
-                    <Link to="/dashboard" className="hover:underline">Dashboard</Link>
-                    <Link to="/tasks" className="hover:underline">Tasks</Link>
-                </nav>
-                <ThemeSwitch />
-                <div className="text-xs">
-                    {user ? <>Signed in as <b>{user.email}</b></> : 'Not signed in'}
+        <div className="app-shell">
+            <aside className="sidebar">
+                <NavLink to="/tasks" className="brand">
+                    <span className="brand-mark">
+                        p<span>•</span>
+                    </span>
+                    productive<span className="brand-dot">.</span>
+                </NavLink>
+                <div className="workspace-label">
+                    <span className="workspace-avatar">P</span>
+                    <div>
+                        {t('navigation.personalSpace')}
+                        <small>{t('navigation.ideas')}</small>
+                    </div>
                 </div>
-                {user && (
-                    <button onClick={() => logout()} disabled={isLoading} className="text-sm underline">
-                        {isLoading ? '…' : 'Logout'}
+                <span className="nav-caption">{t('navigation.space')}</span>
+                <nav>
+                    <NavLink to="/dashboard">
+                        <span>☀</span>
+                        {t('navigation.myDay')}
+                    </NavLink>
+                    <NavLink to="/tasks">
+                        <span>▤</span>
+                        {t('navigation.tasks')}
+                    </NavLink>
+                </nav>
+                <div className="sidebar-note">
+                    <span>✧</span>
+                    <strong>{t('navigation.roomForMore')}</strong>
+                    <p>{t('navigation.clearMind')}</p>
+                </div>
+                <div className="profile">
+                    <span className="avatar">{user?.email[0]?.toUpperCase() || 'P'}</span>
+                    <div>
+                        <strong>{user?.name || t('navigation.mySpace')}</strong>
+                        <small title={user?.email}>{user?.email}</small>
+                    </div>
+                    <button
+                        title={t('common.signOut')}
+                        aria-label={t('common.signOut')}
+                        disabled={isLoading}
+                        onClick={() => void logout()}
+                    >
+                        ↪
                     </button>
-                )}
+                </div>
             </aside>
-            <main className="p-4">
+            <main className="main-content">
                 <Outlet />
             </main>
         </div>

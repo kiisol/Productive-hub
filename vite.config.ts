@@ -11,7 +11,7 @@ export default defineConfig({
             '@entities': resolve(__dirname, 'src/entities'),
             '@features': resolve(__dirname, 'src/features'),
             '@pages': resolve(__dirname, 'src/pages'),
-            '@widgets': resolve(__dirname, 'src/widgets')
-        }
-    }
+            '@widgets': resolve(__dirname, 'src/widgets'),
+        },
+    },
 });

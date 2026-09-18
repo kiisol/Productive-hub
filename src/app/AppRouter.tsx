@@ -12,9 +12,7 @@ const NotFoundPage = lazy(() => import('@pages/NotFoundPage'));
 const router = createBrowserRouter([
     {
         element: <PublicOnlyRoute />,
-        children: [
-            { path: '/login', element: <LoginPage /> },
-        ],
+        children: [{ path: '/login', element: <LoginPage /> }],
     },
     {
         element: <PrivateRoute />,
@@ -31,8 +29,6 @@ const router = createBrowserRouter([
     },
     { path: '*', element: <NotFoundPage /> },
 ]);
-
-
 
 export function AppRouter() {
     return (
