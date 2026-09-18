@@ -7,7 +7,7 @@
 - Before editing, read this file, `README.md`, and the relevant existing feature and styles.
 - Stack: React 19, TypeScript, Vite 7, React Router 7, Tailwind CSS 4, React Hook Form, Zod, Vitest. Use pnpm.
 - Structure: `src/app`, `src/pages`, `src/features`, `src/shared`. Keep pages thin and hooks in individual files.
-- Authentication is a development flow; the Node API issues in-memory demo sessions and stores tasks in a local JSON file. There is no production database or real identity provider yet.
+- Authentication is a development flow; the Node API issues in-memory demo sessions and stores users and tasks in SQLite. There is no production identity provider yet.
 - Code, comments, documentation, and product UI are in English. User-facing copy must go through the shared i18n module.
 
 ## Visual direction
@@ -52,11 +52,12 @@
 - `src/app`: routes, route guards, shared sidebar layout, and error boundary.
 - `src/pages`: login, tasks, dashboard (My Day), and 404. HomePage is an unused prototype.
 - `src/features/auth`: demo service, session context/provider, useAuth, and validated login form.
-- `src/features/tasks`: task model and seed examples, useTasks storage hook, TaskWorkspace, and NewTaskDialog.
+- `src/features/tasks`: task model, API service, useTasks hook, TaskWorkspace, and NewTaskDialog. There are no seed examples.
 - `src/shared/ui`: reusable UI primitives; `src/shared/api/http.ts`: fetch wrapper with token, retries, and timeout.
 - Reusable screen composition lives in `src/shared/ui/ScreenLayout.tsx`, `ScreenHeader`, `StatCard`, and `PanelHeader`. New screens should compose these primitives and pass content through props rather than duplicating layout markup.
 - `src/shared/i18n`: translation keys and the `t`/`useTranslation` helpers. Add user-facing copy there instead of embedding strings in components.
 - `../backend/src/server.js`: local Node API for auth and task CRUD. The backend is a sibling project at `/Volumes/T7/WorkProjects/ProductiveHub/backend` and stores SQLite data in its own `data` directory.
+- `../backend/src/db.js`: SQLite WASM initialization and persistence for users and tasks. The frontend and backend are separate pnpm projects with their own dependency manifests.
 - `src/shared/lib`: number, object, and string helpers with existing Vitest tests.
 - `src/index.css`: global styles and current shared tokens. Path aliases are configured in Vite and TypeScript.
 - Install: `pnpm install`. Start: `pnpm dev`. Use the URL printed by Vite; ports can change when occupied.
@@ -65,13 +66,15 @@
 - Type check without emitted artifacts: `pnpm exec tsc -p tsconfig.app.json --noEmit --composite false --incremental false`.
 - Target formatting to changed files rather than running the repository-wide format command for a small edit.
 - Do not leave generated JavaScript, declarations, or build metadata in source folders. The node TypeScript project currently lacks `noEmit`; check generated artifacts after a full build.
-- Use the existing pnpm lockfile; do not introduce another package-manager lockfile. Ignore macOS `._*` files.
+- Use the existing pnpm lockfile for the frontend; the sibling backend keeps its own `pnpm-lock.yaml`. Do not introduce another package-manager lockfile in either project. Ignore macOS `._*` files.
 
 ## Current implementation and continuation (2026-09-18)
 
 - Implemented a light purple-accent interface for Tasks, My Day, and login, with responsive CSS.
 - Tasks support creating with a priority, completing, deleting, searching, and filtering by completion.
 - Task data is loaded from `GET /api/tasks` and changed through the Node API; there are no seed tasks or frontend fallback records.
+- The backend lives outside this repository at `/Volumes/T7/WorkProjects/ProductiveHub/backend`; `pnpm dev:api` starts that sibling project.
+- SQLite data is persisted at `/Volumes/T7/WorkProjects/ProductiveHub/backend/data/productive-hub.sqlite`; the database is created empty and grows through sign-in and task actions.
 - Tasks are currently browser-wide, not isolated by signed-in user; changing a demo account does not create a separate task workspace.
 - My Day reuses TaskWorkspace and shows incomplete tasks; there are no due dates or actual date-based selection yet.
 - Demo login accepts a valid email and `password123`; session keys are `auth_token` and `auth_user`.
@@ -79,6 +82,7 @@
 - Editing tasks, project management, backend sync, real authentication, and full token migration are not implemented.
 - English is the current product language. Additional languages should be added as translation dictionaries without moving copy back into components.
 - Last checks in this session: frontend TypeScript check and Vite production build passed; 7 existing helper tests passed. Browser checks covered demo login, completion filter, and opening/cancelling the creation dialog.
+- Backend move verification: `../backend` runs on port 3000, `/api/health` reports SQLite, and the frontend repository no longer contains a `backend` directory.
 - Narrow-screen layout and task creation/deletion persistence were not verified end to end in the browser; do not infer coverage from the existing helper tests.
 - Next styling work: finish migrating global and shared component styles to tokens while preserving the approved visual direction. New screens should start from the reusable screen primitives before adding page-specific sections.
 

@@ -24,7 +24,7 @@ pnpm dev
 
 The API runs on `http://127.0.0.1:3000` and the Vite frontend uses `VITE_API_URL` from `.env` when provided. Copy `.env.example` to `.env` to configure it explicitly.
 
-SQLite creates `backend/data/productive-hub.sqlite` on first API start. The database starts empty: users and tasks appear only after someone signs in and adds them.
+SQLite creates `../backend/data/productive-hub.sqlite` on first API start. The database starts empty: users and tasks appear only after someone signs in and adds them.
 
 The demo password is `password123`. Authentication is intentionally development-only until a real identity provider is added.
 
