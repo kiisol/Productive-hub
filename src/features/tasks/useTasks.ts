@@ -1,49 +1,45 @@
-import { useState } from 'react';
-import { initialTasks, type Task } from './model';
-const key = 'productive-hub.tasks.v2';
-function readTasks(): Task[] {
-    try {
-        const saved: unknown = JSON.parse(localStorage.getItem(key) ?? 'null');
-        if (
-            Array.isArray(saved) &&
-            saved.every(
-                (t) =>
-                    t &&
-                    typeof t.id === 'string' &&
-                    typeof t.title === 'string' &&
-                    typeof t.project === 'string' &&
-                    typeof t.done === 'boolean' &&
-                    ['High', 'Medium', 'Low'].includes(t.priority),
-            )
-        )
-            return saved;
-    } catch {
-        /* Use examples when storage is unavailable. */
-    }
-    return initialTasks;
-}
+import { useEffect, useState } from 'react';
+import type { Task } from './model';
+import * as api from './service';
+
 export function useTasks() {
-    const [tasks, setTasks] = useState<Task[]>(readTasks);
+    const [tasks, setTasks] = useState<Task[]>([]);
     const [storageError, setStorageError] = useState(false);
-    function update(next: Task[]) {
-        setTasks(next);
-        try {
-            localStorage.setItem(key, JSON.stringify(next));
-            setStorageError(false);
-        } catch {
-            setStorageError(true);
-        }
-    }
+
+    useEffect(() => {
+        let active = true;
+        api.getTasks()
+            .then((next) => {
+                if (active) setTasks(next);
+            })
+            .catch(() => {
+                if (active) {
+                    setTasks([]);
+                    setStorageError(true);
+                }
+            });
+        return () => {
+            active = false;
+        };
+    }, []);
+
     return {
         tasks,
         storageError,
-        add: (title: string, priority: Task['priority']) =>
-            update([
-                ...tasks,
-                { id: crypto.randomUUID(), title, priority, project: 'Personal', done: false },
-            ]),
-        toggle: (id: string) =>
-            update(tasks.map((t) => (t.id === id ? { ...t, done: !t.done } : t))),
-        remove: (id: string) => update(tasks.filter((t) => t.id !== id)),
+        add: async (title: string, priority: Task['priority']) => {
+            const task = await api.createTask(title, priority);
+            setTasks((current) => [...current, task]);
+            setStorageError(false);
+        },
+        toggle: async (id: string) => {
+            const current = tasks.find((task) => task.id === id);
+            if (!current) return;
+            const updated = await api.updateTask(id, { done: !current.done });
+            setTasks((items) => items.map((task) => (task.id === id ? updated : task)));
+        },
+        remove: async (id: string) => {
+            await api.deleteTask(id);
+            setTasks((current) => current.filter((task) => task.id !== id));
+        },
     };
 }

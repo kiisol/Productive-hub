@@ -106,6 +106,12 @@ importers:
         specifier: ^3.2.4
         version: 3.2.7(@types/node@24.6.0)(yaml@2.8.1)
 
+  backend:
+    dependencies:
+      sql.js:
+        specifier: ^1.13.0
+        version: 1.14.2
+
 packages:
 
   '@babel/code-frame@7.27.1':
@@ -1901,6 +1907,9 @@ packages:
   source-map@0.2.0:
     resolution: {integrity: sha512-CBdZ2oa/BHhS4xj5DlhjWNHcan57/5YuvfdLf17iVmIpd9KRm+DFLmC6nBNj+6Ua7Kt3TmOjDpQT1aTYOQtoUA==}
     engines: {node: '>=0.8.0'}
+
+  sql.js@1.14.2:
+    resolution: {integrity: sha512-3ZGPovObMFrdw79zrUHbfdE/DLIsy8jdNdssmMSQuRAymedU6q84asPt0kgiqrdMYlPegDItiIMfmIXzZnYFcw==}
 
   stackback@0.0.2:
     resolution: {integrity: sha512-1XMJE5fQo1jGH6Y/7ebnwPOBEkIEnT4QF32d5R1+VXdXveM0IBMJt8zfaxX1P3QhVwrYe+576+jkANtSS2mBbw==}
@@ -4054,6 +4063,8 @@ snapshots:
   source-map@0.2.0:
     dependencies:
       amdefine: 1.0.1
+
+  sql.js@1.14.2: {}
 
   stackback@0.0.2: {}
 

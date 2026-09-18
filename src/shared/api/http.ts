@@ -47,7 +47,7 @@ function shouldRetry(err: HttpError | { code?: number | string }, status?: numbe
 
 const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-const BASE_URL = import.meta.env.VITE_API_URL;
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:3000/api';
 
 /** Normalize any error into a single shape. */
 function toHttpError(e: unknown): HttpError {

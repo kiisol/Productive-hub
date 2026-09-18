@@ -7,7 +7,7 @@
 - Before editing, read this file, `README.md`, and the relevant existing feature and styles.
 - Stack: React 19, TypeScript, Vite 7, React Router 7, Tailwind CSS 4, React Hook Form, Zod, Vitest. Use pnpm.
 - Structure: `src/app`, `src/pages`, `src/features`, `src/shared`. Keep pages thin and hooks in individual files.
-- Authentication is a demo; tasks and session data use localStorage. There is no backend or database yet.
+- Authentication is a development flow; the Node API issues in-memory demo sessions and stores tasks in a local JSON file. There is no production database or real identity provider yet.
 - Code, comments, documentation, and product UI are in English. User-facing copy must go through the shared i18n module.
 
 ## Visual direction
@@ -56,9 +56,11 @@
 - `src/shared/ui`: reusable UI primitives; `src/shared/api/http.ts`: fetch wrapper with token, retries, and timeout.
 - Reusable screen composition lives in `src/shared/ui/ScreenLayout.tsx`, `ScreenHeader`, `StatCard`, and `PanelHeader`. New screens should compose these primitives and pass content through props rather than duplicating layout markup.
 - `src/shared/i18n`: translation keys and the `t`/`useTranslation` helpers. Add user-facing copy there instead of embedding strings in components.
+- `../backend/src/server.js`: local Node API for auth and task CRUD. The backend is a sibling project at `/Volumes/T7/WorkProjects/ProductiveHub/backend` and stores SQLite data in its own `data` directory.
 - `src/shared/lib`: number, object, and string helpers with existing Vitest tests.
 - `src/index.css`: global styles and current shared tokens. Path aliases are configured in Vite and TypeScript.
 - Install: `pnpm install`. Start: `pnpm dev`. Use the URL printed by Vite; ports can change when occupied.
+- Start the API in a second terminal with `pnpm dev:api`; the script runs the sibling `../backend` project on `http://127.0.0.1:3000`. The frontend defaults to this API and can override it with `VITE_API_URL`.
 - Build: `pnpm build`. Tests: `pnpm test`. Lint: `pnpm lint`.
 - Type check without emitted artifacts: `pnpm exec tsc -p tsconfig.app.json --noEmit --composite false --incremental false`.
 - Target formatting to changed files rather than running the repository-wide format command for a small edit.
@@ -69,11 +71,11 @@
 
 - Implemented a light purple-accent interface for Tasks, My Day, and login, with responsive CSS.
 - Tasks support creating with a priority, completing, deleting, searching, and filtering by completion.
-- Task data uses `productive-hub.tasks.v1` in localStorage, with example tasks when no valid saved data exists.
+- Task data is loaded from `GET /api/tasks` and changed through the Node API; there are no seed tasks or frontend fallback records.
 - Tasks are currently browser-wide, not isolated by signed-in user; changing a demo account does not create a separate task workspace.
 - My Day reuses TaskWorkspace and shows incomplete tasks; there are no due dates or actual date-based selection yet.
 - Demo login accepts a valid email and `password123`; session keys are `auth_token` and `auth_user`.
-- HTTP configuration uses `VITE_API_URL`; the demo auth and tasks do not call a backend.
+- HTTP configuration uses `VITE_API_URL`; login and task operations call the local Node API.
 - Editing tasks, project management, backend sync, real authentication, and full token migration are not implemented.
 - English is the current product language. Additional languages should be added as translation dictionaries without moving copy back into components.
 - Last checks in this session: frontend TypeScript check and Vite production build passed; 7 existing helper tests passed. Browser checks covered demo login, completion filter, and opening/cancelling the creation dialog.
