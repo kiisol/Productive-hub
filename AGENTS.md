@@ -85,6 +85,7 @@
 - English is the current product language. Additional languages should be added as translation dictionaries without moving copy back into components.
 - Last checks in this session: frontend TypeScript check and Vite production build passed; 7 existing helper tests passed. Browser checks covered demo login, completion filter, and opening/cancelling the creation dialog.
 - Backend move verification: `../backend` runs on port 3000, `/api/health` reports SQLite, and the frontend repository no longer contains a `backend` directory.
+- Backend service split verification: `server.js` keeps HTTP routing, while `services/authService.js` and `services/taskService.js` contain authentication and task business logic.
 - Narrow-screen layout and task creation/deletion persistence were not verified end to end in the browser; do not infer coverage from the existing helper tests.
 - Next styling work: finish migrating global and shared component styles to tokens while preserving the approved visual direction. New screens should start from the reusable screen primitives before adding page-specific sections.
 

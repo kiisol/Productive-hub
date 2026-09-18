@@ -39,6 +39,8 @@ pnpm build
 
 - `src/` contains the React frontend.
 - `../backend/src/server.js` exposes auth and task endpoints.
+- `../backend/src/services/authService.js` owns registration, login, and development sessions.
+- `../backend/src/services/taskService.js` owns task validation and CRUD orchestration.
 - `../backend/src/db.js` owns SQLite initialization and persistence.
 - `src/shared/api/http.ts` is the frontend API client.
 
